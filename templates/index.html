@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TIL에 오신 것을 환영합니다.</title>
+    <script
+            src="https://code.jquery.com/jquery-3.6.0.js"
+            integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" href="../static/app.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&family=Poppins:wght@300;600&display=swap"
+          rel="stylesheet">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <script>
+        function login() {
+            id = $('.id-el').val();
+            pw = $('.pw-el').val();
+            $.ajax({
+                type: "POST",
+                url: "/api/login",
+                data: {id_give: id, pw_give: pw},
+                success: function (response) {
+                    if (response['result'] == 'fail') {
+                        alert(response['msg'])
+                    }
+                    if (response['result'] == 'success') {
+                        let access_token = response['token']
+                        $.cookie('mytoken', access_token, {path: '/'})
+                        window.location.replace("/main")
+                    }
+                }
+            })
+        }
+        function goRegisterPage() {
+            window.location.replace("/register")
+        }
+    </script>
+</head>
+<body>
+<h1 class="title">Today I learned 지금 시작해보세요!</h1>
+<div class="container">
+    <h1 class="menu-text">LOGIN</h1>
+    <div class="login-session">
+        <input class="id-el" type="text" placeholder="아이디"/>
+        <input class="pw-el" type="password" placeholder="비밀번호"/>
+        <button onclick="login()" class="login-btn">로그인</button>
+        <span class="register-btn" onclick="goRegisterPage()">회원가입</span>
+    </div>
+</div>
+</body>
+</html>

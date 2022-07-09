@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TIL에 오신 것을 환영합니다.</title>
+    <script
+            src="https://code.jquery.com/jquery-3.6.0.js"
+            integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" href="../static/app.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&family=Poppins:wght@300;600&display=swap"
+          rel="stylesheet">
+    <script>
+    function register() {
+            id = $('.id-el').val();
+            pw = $('.pw-el').val();
+            $.ajax({
+                type: "POST",
+                url: "/api/register",
+                data: {id_give: id, pw_give: pw},
+                success: function (response) {
+                    console.log(response)
+                    alert('회원가입 성공!')
+                    window.location.replace("/home")
+                }
+            })
+        }
+        function backToMainPage() {
+            window.location.replace("/home")
+        }
+    </script>
+</head>
+<body>
+<h1 class="title">TIL에 가입해보세요!</h1>
+<div class="container">
+    <h1 class="menu-text">회원가입</h1>
+    <div class="login-session">
+        <input class="id-el" type="text" placeholder="아이디"/>
+        <input class="pw-el" type="password" placeholder="비밀번호"/>
+        <button onclick="register()" class="login-btn">회원가입</button>
+        <span class="register-btn" onclick="backToMainPage()">뒤로</span>
+    </div>
+</div>
+</body>
+</html>

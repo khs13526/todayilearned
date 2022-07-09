@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>오늘 배운 것을 공유해요!</title>
+    <script
+            src="https://code.jquery.com/jquery-3.6.0.js"
+            integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" href="../static/app.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&family=Poppins:wght@300;600&display=swap"
+          rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function () {
+            show_list();
+        });
+
+        function show_list() {
+            $.ajax({
+                type: "GET",
+                url: "/api/content",
+                data: {},
+                success: function (response) {
+                    console.log(response['contents'])
+                    let rows = response['contents']
+                    let count = 1;
+                    for (let i = 0; i < rows.length; i++) {
+                        let title = rows[i]['title']
+                        let content = rows[i]['content']
+                        let temp_html = `<div class="card text-bg-light mb-3" style="min-width: 45rem; max-width: 45rem;">
+                                            <div class="card-header">#${count}</div>
+                                            <div class="card-body">
+                                             <h5 class="card-title">${title}</h5>
+                                             <p class="card-text">${content}</p>
+                                            </div>`
+                        count += 1;
+                        $('.card-wrap').prepend(temp_html)
+                    }
+                }
+            });
+        }
+
+        function logout() {
+            $.removeCookie('mytoken')
+            window.location.reload()
+        }
+
+        function show() {
+            $('.mypost').toggle();
+            $('.post-btn').text(
+                $('.post-btn').text() == "등록하기" ? "닫기" : "등록하기"
+            )
+        }
+
+        function close_box() {
+            $('.mypost').hide()
+        }
+
+        function post() {
+            $('.mypost').hide()
+            let title = $('#title').val()
+            let content = $('#content').val()
+            if (title == "" || content == "") {
+                alert("제목과 내용을  모두 입력해주세요!")
+            } else {
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/post',
+                    data: {title_give: title, content_give: content},
+                    success: function (response) {
+                        alert(response['msg'])
+                        window.location.reload()
+                    }
+                })
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="nav-bar">
+    <h1>{{id}}님 환영합니다!</h1>
+    <button class="logout-btn" onclick="logout()">로그아웃</button>
+</div>
+<div class="mainpage-text">
+    <span>오늘 배운 것을 등록해주세요!</span>
+    <button onclick="show()" class="post-btn">등록하기</button>
+</div>
+<div class="mypost">
+    <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="title" placeholder="title">
+        <label for="floatingInput">제목</label>
+    </div>
+    <div class="form-floating">
+<textarea class="form-control" placeholder="content" id="content"
+          style="height: 100px"></textarea>
+        <label for="floatingTextarea2">내용</label>
+    </div>
+    <button id="post-btn" onclick="post()" type="button" class="btn btn-dark">등록하기</button>
+    <button id="close-btn" onclick="close_box()" type="button" class="btn btn-dark">닫기</button>
+</div>
+<div class="card-wrap">
+
+</div>
+</div>
+</body>
+</html>
