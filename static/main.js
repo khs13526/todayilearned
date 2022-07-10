@@ -57,7 +57,7 @@ function post() {
         $.ajax({
             type: 'POST',
             url: '/api/post',
-            data: {title_give: title, content_give: content, id_give: '{{id}}'},
+            data: {title_give: title, content_give: content, id_give: userId},
             success: function (response) {
                 alert(response['msg'])
                 window.location.reload()
@@ -70,7 +70,7 @@ function card_delete(id) {
     $.ajax({
         type: 'POST',
         url: '/api/delete',
-        data: {id_give: id, userId_give: '{{id}}'},
+        data: {id_give: id, userId_give: userId},
         success: function (response) {
             alert(response['msg'])
             if (response['check'] == 1) {
