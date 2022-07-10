@@ -4,7 +4,7 @@ body {
     background-size: cover;
     font-family: 'Nanum Gothic', sans-serif;
     color: white;
-    height: 100vh !important;
+    min-height: 100vh !important;
 
 }
 
