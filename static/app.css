@@ -137,6 +137,7 @@ body {
     font-size: 12px;
     margin-right: auto;
     padding-left: 0px;
+    padding-right: 0px;
 }
 .card-section {
     display: flex;
@@ -157,4 +158,11 @@ body {
 
 .card-title {
     padding-bottom: 15px;
+}
+
+.card-time {
+    color: gray;
+    font-size: 12px;
+    margin-right: auto;
+    padding-left: 0px;
 }

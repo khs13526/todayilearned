@@ -46,9 +46,13 @@ def api_register():
     id_receive = request.form['id_give']
     pw_receive = request.form['pw_give']
     pw_hash = hashlib.sha256(pw_receive.encode('utf-8')).hexdigest()
-    db.users.insert_one({'id': id_receive, 'pw': pw_hash,})
-
-    return jsonify({'result': 'success'})
+    user = db.users.find_one({'id': id_receive})
+    if user is None:
+        db.users.insert_one({'id': id_receive, 'pw': pw_hash,})
+        check = 1
+    else:
+        check = 0
+    return jsonify({'result': 'success', 'check': check})
 
 @app.route('/api/login', methods=['POST'])
 def api_login():
@@ -62,8 +66,8 @@ def api_login():
             'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)
         }
         # 서버에서 실행시 디코딩 필요
-        token = jwt.encode(payload, SECRET_KEY, algorithm='HS256').decode('utf-8')
-        # token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+        # token = jwt.encode(payload, SECRET_KEY, algorithm='HS256').decode('utf-8')
+        token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
         return jsonify({'result': 'success', 'token': token})
     else:
         return jsonify(({'result' : 'fail', 'msg': '아이디/비밀번호가 일치하지 않습니다.'}))
@@ -73,10 +77,13 @@ def api_register_list():
     title_receive = request.form['title_give']
     content_receive = request.form['content_give']
     id_receive = request.form['id_give']
+    insertTime_receive = request.form['insertTime_give']
+    print(insertTime_receive)
     doc = {
         'userId': id_receive,
         'title': title_receive,
-        'content': content_receive
+        'content': content_receive,
+        'insertTime': insertTime_receive
     }
     db.contents.insert_one(doc)
     return jsonify({'msg': '등록되었습니다!'})
