@@ -119,3 +119,42 @@ body {
 #close-btn {
     margin-top: 20px;
 }
+
+.toggle-btn {
+    width: 100px;
+    height: 50px;
+    color: white;
+    background-color: transparent;
+    border: white 1px solid;
+    border-radius: 15px;
+    cursor: pointer;
+    margin: 20px
+}
+
+.card-writer {
+    padding: 10px;
+    color: gray;
+    font-size: 12px;
+    margin-right: auto;
+    padding-left: 0px;
+}
+.card-section {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+#card-dlt-btn {
+    margin-left: auto;
+    opacity: 0;
+}
+
+.card-body:hover #card-dlt-btn {
+    transition: all 0.5s;
+    opacity: 1;
+}
+
+.card-title {
+    padding-bottom: 15px;
+}

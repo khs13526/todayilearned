@@ -2,9 +2,8 @@ import datetime
 import hashlib
 
 import jwt
-from flask import Flask, render_template, request , jsonify, redirect,url_for, session
-from flask_login import login_required
-
+from flask import Flask, render_template, request , jsonify, redirect,url_for
+from bson import ObjectId
 app = Flask(__name__)
 
 from pymongo import MongoClient
@@ -36,22 +35,17 @@ def mainpage():
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         user_info = db.users.find_one({"id": payload['id']})
-        print(user_info['id'])
         return render_template('main.html', id = user_info["id"])
     except jwt.ExpiredSignatureError:
-        print("error1!")
         return redirect(url_for("home"))
     except jwt.exceptions.DecodeError:
-        print("error2!")
         return redirect(url_for("home"))
 
 @app.route('/api/register', methods=['POST'])
 def api_register():
     id_receive = request.form['id_give']
     pw_receive = request.form['pw_give']
-    print(id_receive, pw_receive)
     pw_hash = hashlib.sha256(pw_receive.encode('utf-8')).hexdigest()
-    print(pw_hash)
     db.users.insert_one({'id': id_receive, 'pw': pw_hash,})
 
     return jsonify({'result': 'success'})
@@ -60,17 +54,16 @@ def api_register():
 def api_login():
     id_receive = request.form['id_give']
     pw_receive = request.form['pw_give']
-    print(id_receive, pw_receive)
     pw_hash = hashlib.sha256(pw_receive.encode('utf-8')).hexdigest()
-    print(pw_hash)
     result = db.users.find_one({'id':id_receive, 'pw': pw_hash})
     if result is not None:
         payload = {
             'id': id_receive,
             'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)
         }
+        # 서버에서 실행시 디코딩 필요
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256').decode('utf-8')
-        print(token)
+        # token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
         return jsonify({'result': 'success', 'token': token})
     else:
         return jsonify(({'result' : 'fail', 'msg': '아이디/비밀번호가 일치하지 않습니다.'}))
@@ -79,12 +72,13 @@ def api_login():
 def api_register_list():
     title_receive = request.form['title_give']
     content_receive = request.form['content_give']
+    id_receive = request.form['id_give']
     doc = {
+        'userId': id_receive,
         'title': title_receive,
         'content': content_receive
     }
     db.contents.insert_one(doc)
-
     return jsonify({'msg': '등록되었습니다!'})
 
 @app.route('/api/content', methods=['GET'])
@@ -92,6 +86,21 @@ def api_get_list():
     content_list = list(db.contents.find({}))
     objectIdDecoder(content_list)
     return jsonify({'contents': content_list})
+
+@app.route('/api/delete', methods=['POST'])
+def api_delete_list():
+    id_receive = request.form['id_give']
+    userId_receive = request.form['userId_give']
+    content = db.contents.find_one({'_id': ObjectId(id_receive)})
+    print(userId_receive)
+    if content['userId'] == userId_receive:
+        db.contents.delete_one({'_id': ObjectId(id_receive)})
+        msg = "삭제되었습니다!"
+        check = 1
+    else:
+        msg = "본인이 작성한 글이 아닙니다."
+        check = 0
+    return jsonify({'msg': msg, 'check': check})
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
